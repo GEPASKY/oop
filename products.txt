@@ -1,0 +1,4 @@
+Apple 20.0
+Banana 30.0
+Orange 40.0
+Blueberry 100.00
