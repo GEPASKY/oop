@@ -1,22 +1,35 @@
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 
-/* Создать класс для работы с денежными суммами. Денежная сумма предствлена двумя
+/* Создать класс для работы с денежными суммами. Денежная сумма представлена двумя
 числами: типа long для рублей и типа unsigned char для копеек. При выводе на экран дробная
 часть от целой должна отделяться запятой. Реализовать сложение, вычитание, деление сумм,
 деление и умножение суммы на дробное число и операции сравнения.*/
 
 class Money {
 private:
-    long rubles;
-    unsigned char kopecks;
+    long rubles;//4
+    unsigned char kopecks;//256
 public:
-    Money() : rubles(0), kopecks(0) {} // конструктор по умолчанию
-    Money(long rub, unsigned char kop) : rubles(rub), kopecks(kop) {} // конструктор с параметрами
+    Money() : rubles(0), kopecks(0) {
+    
+    } // конструктор по умолчанию
+    Money(long rub, long kop){
+        Init(rub,kop);
+    } // конструктор с параметрами
     Money(const Money &other) : rubles(other.rubles), kopecks(other.kopecks) {} // конструктор копирования
+    Money(Money&& other) noexcept : rubles(std::exchange(other.rubles, 0)), kopecks(std::exchange(other.kopecks, 0)) {}
+    // конструктор перемещения
+
     // Метод инициализации
-    void Init(long rub, unsigned char kop) {
+    void Init(long rub, long kop) {
+
+        rub += kop / 100;
+        kop = abs(kop % 100);
+
+        
         rubles = rub;
         kopecks = kop;
     }
@@ -69,7 +82,7 @@ public:
         long total2 = other.rubles * 100 + other.kopecks;
         long diff = total1 - total2;
         if (diff < 0) {
-            std::cerr << "Отрицательная сумма! " << std::endl;
+            std::cerr << "negative amount!\n";
         } else {
             result.rubles = diff / 100;
             result.kopecks = diff % 100;
@@ -119,11 +132,15 @@ public:
 };
 
 int main() {
+    setlocale(LC_ALL,"rus");
+    //system("chcp 1250");
     Money m1, m2(10, 50);
     Money m3;
-    m3 = m1;
-
-    m1.Init(5, 25);
+    m1.Init(5, 2550);
+    // m3 = std::move(m2);
+    std::cout << m1.toString() << " m1\n";
+    std::cout << m2.toString() << " m2\n";
+    
     std::cout << "m1: " << m1.toString() << std::endl;
     std::cout << "m2: " << m2.toString() << std::endl;
 
